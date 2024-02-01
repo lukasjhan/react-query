@@ -50,7 +50,7 @@ function TestComponent() {
       queryKey: ['number'],
       queryFn: fetchData,
       //refetchInterval: 1000,
-      staleTime: 30000, // 5 seconds stale time
+      staleTime: 5000, // 5 seconds stale time
       gcTime: 10000, // 30 seconds cache time
     },
     queryClient
