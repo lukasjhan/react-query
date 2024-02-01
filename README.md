@@ -1,46 +1,78 @@
-# Getting Started with Create React App
+# Studying React Query under the hood
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a simple project to study the React Query library under the hood.
 
-## Available Scripts
+## How to run
 
-In the project directory, you can run:
+### Run the test server
 
-### `npm start`
+```bash
+cd server
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+pnpm install
+pnpm run start
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+The server will be running on `http://localhost:3000`.
 
-### `npm test`
+GET `http://localhost:3000` will return a a number that increases(+1) by every requests.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Run the front-end
 
-### `npm run build`
+```bash
+npm install
+npm run start
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The front-end will be running on `http://localhost:3001`. or other port if 3001 is already in use.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+You can check the logic by using Toggle button.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## How to test?
 
-### `npm run eject`
+![demo](./docs/screencast.gif)
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+check the `src/App.tsx` file and modify the `useQuery` hook to see the behavior of the React Query.
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```tsx
+import React from 'react';
+import { QueryClient, useQuery } from '@tanstack/react-query';
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+const queryClient = new QueryClient();
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+function fetchData() {
+  return fetch('http://localhost:3000').then((res) => res.text());
+}
 
-## Learn More
+function TestComponent() {
+  const { data, isFetching } = useQuery(
+    {
+      queryKey: ['number'],
+      queryFn: fetchData,
+      //refetchInterval: 1000,
+      staleTime: 30000, // 5 seconds stale time
+      gcTime: 10000, // 30 seconds cache time
+    },
+    queryClient
+  );
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+  if (isFetching) return <div>Loading...</div>;
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+  return <div>Data: {data}</div>;
+}
+
+function App() {
+  const [showComponent, setShowComponent] = React.useState(true);
+
+  return (
+    <div>
+      <button onClick={() => setShowComponent(!showComponent)}>
+        Toggle Component
+      </button>
+      {showComponent && <TestComponent />}
+    </div>
+  );
+}
+
+export default App;
+```
