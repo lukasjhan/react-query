@@ -2,6 +2,8 @@
 
 This is a simple project to study the React Query library under the hood.
 
+check the official documentation [here](https://tanstack.com/query/latest/docs/framework/react/reference/useQuery)
+
 ## How to run
 
 ### Run the test server
